@@ -55,6 +55,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import de.mindpipe.android.logging.log4j.LogConfigurator;
 
 /** 
  * Spydroid basically launches an RTSP server and an HTTP server, 
@@ -98,7 +99,11 @@ public class SpydroidActivity extends FragmentActivity {
 			// We still need this line for backward compatibility reasons with android 2
 			mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 			SessionBuilder.getInstance().setSurfaceHolder(mSurfaceHolder);
-
+		    LogConfigurator logConfigurator = new LogConfigurator();
+		    logConfigurator.setUseFileAppender(false);
+		    logConfigurator.setUseLogCatAppender(true); // Log to logcat the Android way
+		    logConfigurator.configure();
+			
 		} else {
 
 			// Tablet detected !
@@ -108,6 +113,9 @@ public class SpydroidActivity extends FragmentActivity {
 			mViewPager = (ViewPager) findViewById(R.id.tablet_pager);
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			mApplication.videoQuality.orientation = 0;
+
+		                             
+			
 
 		}
 

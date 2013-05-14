@@ -37,9 +37,12 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings.Secure;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -168,6 +171,8 @@ public class HandsetFragment extends Fragment {
 		WifiManager wifiManager = (WifiManager) mApplication.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 		WifiInfo info = wifiManager.getConnectionInfo();
 		String ipaddress = null;
+		String id = (Secure.getString(getActivity().getContentResolver(), Secure.ANDROID_ID));
+        String uri = "/devices/" + id + "/camera";
     	if (info!=null && info.getNetworkId()>-1) {
 	    	int i = info.getIpAddress();
 	        String ip = String.format(Locale.ENGLISH,"%d.%d.%d.%d", i & 0xff, i >> 8 & 0xff,i >> 16 & 0xff,i >> 24 & 0xff);
@@ -177,7 +182,10 @@ public class HandsetFragment extends Fragment {
 	    	mLine2.setText("rtsp://");
 	    	mLine2.append(ip);
 	    	mLine2.append(":"+mRtspServer.getPort());
+	    	new Post().execute(uri, mLine2.getText().toString());
+	    	
 	    	streamingState(0);
+	    	
     	} else if((ipaddress = Utilities.getLocalIpAddress(true)) != null) {
     		mLine1.setText(mHttpServer.isHttpsEnabled()?"https://":"http://");
 	    	mLine1.append(ipaddress);
@@ -190,6 +198,19 @@ public class HandsetFragment extends Fragment {
     		streamingState(2);
     	}
     	
+    }
+    
+    public class Post extends AsyncTask <String, Void, Void>
+    {
+
+        @Override
+        protected Void doInBackground(String... array) {
+        	Log.i("GOT TO doInBackground", "NOTICE");
+            CoapClientCustom ccc = new CoapClientCustom();
+            ccc.post(array[0], array[1]);
+            return null;
+        }
+       
     }
 
     private final ServiceConnection mRtspServiceConnection = new ServiceConnection() {
