@@ -182,17 +182,20 @@ public class HandsetFragment extends Fragment {
 	    	mLine2.setText("rtsp://");
 	    	mLine2.append(ip);
 	    	mLine2.append(":"+mRtspServer.getPort());
-	    	new Post().execute(uri, mLine2.getText().toString());
+	    	new Post().execute(uri, "http://" + ip + ":" + mHttpServer.getHttpPort());
 	    	
 	    	streamingState(0);
 	    	
     	} else if((ipaddress = Utilities.getLocalIpAddress(true)) != null) {
+
     		mLine1.setText(mHttpServer.isHttpsEnabled()?"https://":"http://");
 	    	mLine1.append(ipaddress);
 	    	mLine1.append(":"+mHttpServer.getHttpPort());
 	    	mLine2.setText("rtsp://");
 	    	mLine2.append(ipaddress);
 	    	mLine2.append(":"+mRtspServer.getPort());
+	    	new Post().execute(uri, "http://" + ipaddress + ":" + mHttpServer.getHttpPort());
+
 	    	streamingState(0);
     	} else {
     		streamingState(2);

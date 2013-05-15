@@ -11,10 +11,11 @@ import org.ws4d.coap.interfaces.CoapRequest;
 import org.ws4d.coap.interfaces.CoapResponse;
 import org.ws4d.coap.messages.CoapRequestCode;
 
+import android.util.Base64;
 import android.util.Log;
 
 public class CoapClientCustom implements org.ws4d.coap.interfaces.CoapClient {
-    private static final String SERVER_ADDRESS = "localhost";
+    private static final String SERVER_ADDRESS = "82.130.13.181";
     private static final int PORT = Constants.COAP_DEFAULT_PORT;
     CoapChannelManager channelManager = BasicCoapChannelManager.getInstance();
     CoapClientChannel clientChannel = null;
@@ -22,11 +23,13 @@ public class CoapClientCustom implements org.ws4d.coap.interfaces.CoapClient {
    
     public void post(String uri, String url){
         try {
-            Log.i("coapclient", "here");
+            Log.i("URL obtained", url);
             clientChannel = channelManager.connect(this, InetAddress.getByName(SERVER_ADDRESS), PORT);
             CoapRequest coapRequest = clientChannel.createRequest(true, CoapRequestCode.POST);
             coapRequest.setUriPath(uri);
+            //byte[] decoded = Base64.decode(url, Base64.DEFAULT );      
             coapRequest.setPayload(url);
+            
         //    coapRequest.setPayload("SOmme".getBytes());
             clientChannel.sendMessage(coapRequest);
         } catch (UnknownHostException e) {
@@ -55,14 +58,14 @@ public class CoapClientCustom implements org.ws4d.coap.interfaces.CoapClient {
     @Override
     public void onResponse(CoapClientChannel channel, CoapResponse response) {
         // TODO Auto-generated method stub
-        Log.d("Coap", "response came");
+        Log.i("Coap", "response came");
     }
 
     @Override
     public void onConnectionFailed(CoapClientChannel channel,
             boolean notReachable, boolean resetByServer) {
         // TODO Auto-generated method stub
-        Log.d("Coap", "connection failed");
+        Log.i("Coap", "connection failed");
 
     }
 }
